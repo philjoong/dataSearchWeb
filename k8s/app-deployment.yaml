@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: excel-search-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: excel-search-app
+  template:
+    metadata:
+      labels:
+        app: excel-search-app
+    spec:
+      containers:
+      - name: web
+        image: harbor.sailio.ncsoft.com/kimkyoungmin/excel-search:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGODB_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: uri
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: excel-search-app
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: excel-search-app 
